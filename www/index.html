@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta name="generator" content="">
+    <title>Background Test</title>
+
+    <!-- manifest meta -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+    <!-- Favicons -->
+    <link rel="apple-touch-icon" href="assets/img/favicon180.png" sizes="180x180">
+    <link rel="icon" href="assets/img/favicon32.png" sizes="32x32" type="image/png">
+    <link rel="icon" href="assets/img/favicon16.png" sizes="16x16" type="image/png">
+
+    <!-- Google fonts-->
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <!-- bootstrap icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+
+    <!-- style css for this template -->
+    <link href="assets/css/style.css" rel="stylesheet" id="style">
+</head>
+
+<body class="body-scroll dark-mode">
+
+    <!-- loader section -->
+    <div class="container-fluid loader-wrap">
+        <div class="row h-100">
+            <div class="col-10 col-md-6 col-lg-5 col-xl-3 mx-auto text-center align-self-center">
+                <div class="loader-cube-wrap mx-auto">
+                    <div class="loader-cube1 loader-cube"></div>
+                    <div class="loader-cube2 loader-cube"></div>
+                    <div class="loader-cube4 loader-cube"></div>
+                    <div class="loader-cube3 loader-cube"></div>
+                </div>
+                <p>Great things ahead!<br><strong>Please wait...</strong></p>
+            </div>
+        </div>
+    </div>
+    <!-- loader section ends -->
+
+
+    <!-- Begin page -->
+    <main class="">
+
+        <!-- main page content -->
+        <div class="main-container container">
+
+            <h3 class="my-3">Test procesos <span id="dispositivo_listo" class="text-primary"> background</span></h3>
+
+            <div class="row my-2">
+                <div class="col-12">
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header">
+                            <div class="row">
+                                <div class="col">
+                                    <h6 class="my-1">Datos del dispositivo</h6>
+                                </div>
+                            </div>
+                        </div>
+                        <ul class="list-group list-group-flush">
+
+                            <li class="list-group-item border-0">
+                                <div class="row">
+                                    <div class="col-auto">
+                                        <p id="datos_dispositivo"></p>
+                                    </div>
+                                </div>
+                            </li>
+
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header">
+                            <div class="row">
+                                <div class="col">
+                                    <h6 class="my-1">Eventos</h6>
+                                </div>
+                                <div class="col-auto px-0">
+                                    <!-- <a class="btn btn-link btn-sm" href="#">...</a> -->
+                                </div>
+                            </div>
+                        </div>
+                        <ul id="eventos_zone" class="list-group list-group-flush">
+
+
+
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header">
+                            <div class="row">
+                                <div class="col">
+                                    <h6 class="my-1">Token</h6>
+                                </div>
+                                <div class="col-auto px-0">
+                                    <small id="token_zone"></small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- main page content ends -->
+
+
+    </main>
+    <!-- Page ends-->
+
+    <!-- Required jquery and libraries -->
+    <script src="assets/js/jquery-3.3.1.min.js"></script>
+    <script src="assets/js/popper.min.js"></script>
+    <script src="assets/vendor/bootstrap-5/js/bootstrap.bundle.min.js"></script>
+
+    <!-- cookie js -->
+    <script src="assets/js/jquery.cookie.js"></script>
+
+    <!-- Customized jquery file  -->
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/color-scheme.js"></script>
+    <script src="cordova.js"></script>
+
+    <!-- page level custom script -->
+    <!-- <script src="assets/js/app.js"></script> -->
+    <script>
+        document.addEventListener("deviceready", device_ok, false);
+
+        function device_ok() {
+
+            var datos_dispositivo = "<b>Modelo: </b> " + device.model + "<br/>"
+            datos_dispositivo += "<b>UUID: </b> " + device.uuid + "<br/>"
+            datos_dispositivo += "<b>Fabricante: </b> " + device.manufacturer + "<br/>"
+            datos_dispositivo += "<b>Versión: </b> " + device.version + "<br/>"
+
+            $("#datos_dispositivo").html(datos_dispositivo)
+
+            var fcm_token = localStorage.getItem("fcm_token")
+
+            if ( fcm_token === null) {
+                get_firebase_token(function (status, token) {
+                    if (status) {
+                        console.log("** Obtuve OK token: ", token)
+                        localStorage.setItem("fcm_token", token)
+                        $("#token_zone").html("<b>GENERO: </b>" + token)
+                    }//Fin de if
+                })//Fin de get_firebase_token
+            }else{
+                console.log("Ya existia token.");
+                $("#token_zone").html(fcm_token)
+            }
+
+
+
+        }//Fin de device_ok
+
+        function get_firebase_token(callback) {
+            FirebasePlugin.getToken(function (fcmToken) {
+                // console.log("*Token OK", fcmToken)
+                callback(true, fcmToken)
+            }, function (error) {
+                console.log("*ERROR: ", error);
+                callback(false, null)
+            })
+        }//Fin de get_firebase_token
+
+
+        function lista_elemento() {
+            return `<li class="list-group-item border-0">
+                                <div class="row">
+                                    <div class="col-auto">
+                                        <figure class="avatar avatar-50 rounded-circle">
+                                            <img src="assets/img/ok.png" alt="">
+                                        </figure>
+                                    </div>
+                                    <div class="col px-0">
+                                        <p> <span>Orden recibida</span><br/><small>Tipo de notificación</small></p>
+                                    </div>
+                                    <div class="col-auto text-end">
+                                        <p>
+                                            <small class="text-muted"><span>Fecha y hora</span> <span
+                                                    class="avatar avatar-6 rounded-circle bg-success d-inline-block"></span></small>
+                                            <br><small class="text-success">Datos enviados</small>
+                                        </p>
+                                    </div>
+                                </div>
+                            </li>`
+        }//Fin de lista_elemento
+
+    </script>
+
+</body>
+
+</html>
