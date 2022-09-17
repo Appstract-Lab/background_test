@@ -145,15 +145,48 @@
     <!-- <script src="assets/js/app.js"></script> -->
     <script>
 
-        document.addEventListener("deviceready", device_ok, false)
+        document.addEventListener("deviceready", onDeviceReady, false)
 
-        function device_ok() {
+        async function onDeviceReady() {
+
             var datos_dispositivo = "<b>Modelo: </b> " + device.model + "<br/>"
             datos_dispositivo += "<b>UUID: </b> " + device.uuid + "<br/>"
             datos_dispositivo += "<b>Fabricante: </b> " + device.manufacturer + "<br/>"
             datos_dispositivo += "<b>Versión: </b> " + device.version + "<br/>"
 
             $("#datos_dispositivo").html(datos_dispositivo)
+
+            var BackgroundFetch = window.BackgroundFetch;
+
+            // Your BackgroundFetch event handler.
+            var onEvent = async function (taskId) {
+                var fecha = new Date().toLocaleString()
+                var message = '[BackgroundFetch] event received: ' + taskId + " ["+fecha+"]"
+                console.log(message)
+                $("#eventos_zone").append(lista_elemento(message))
+                BackgroundFetch.finish(taskId)
+            };
+
+            // Timeout callback is executed when your Task has exceeded its allowed running-time.
+            // You must stop what you're doing immediately BackgroundFetch.finish(taskId)
+            var onTimeout = async function (taskId) {
+                console.log();
+                var fecha = new Date().toLocaleString()
+                var message = '[BackgroundFetch] TIMEOUT: '+ taskId + " ["+fecha+"]"
+                console.log(message);
+                $("#eventos_zone").append(lista_elemento(message))
+                BackgroundFetch.finish(taskId)
+            };
+
+            var status = await BackgroundFetch.configure({ minimumFetchInterval: 15 }, onEvent, onTimeout);
+            var fecha = new Date().toLocaleString()
+            var message = '[BackgroundFetch] configure status: ' + status + " ["+fecha+"]"
+            console.log(message);
+            $("#eventos_zone").append(lista_elemento(message))
+        }
+
+        function device_ok() {
+            
 
             var fcm_token = localStorage.getItem("fcm_token")
 
@@ -181,7 +214,7 @@
             FirebasePlugin.onMessageReceived(function (message) {
                 console.log("*message: ", message)
                 $("#eventos_zone").append(lista_elemento(message))
-                
+
                 // console.log("Message type: " + message.messageType);
                 // if (message.messageType === "notification") {
                 //     console.log("Notification message received");
@@ -199,7 +232,7 @@
 
         function suscribe_channel(topic) {
             FirebasePlugin.subscribe(topic, function () {
-                console.log("Subscribed to topic: ", topic );
+                console.log("Subscribed to topic: ", topic);
             }, function (error) {
                 console.error("Error subscribing to topic: " + error);
             });
@@ -219,6 +252,11 @@
             var html = `<li class="list-group-item border-0">
                                 <div class="row">
                                     <div class="col-auto">
+                                        <p>
+                                            `+message+`
+                                        </p>
+                                    </div>
+                                    <!--<div class="col-auto">
                                         <figure class="avatar avatar-50 rounded-circle">
                                             <img src="assets/img/ok.png" alt="">
                                         </figure>
@@ -232,7 +270,7 @@
                                                     class="avatar avatar-6 rounded-circle bg-success d-inline-block"></span></small>
                                             <br><small class="text-success">Datos enviados</small>
                                         </p>
-                                    </div>
+                                    </div>-->
                                 </div>
                             </li>`
 
@@ -240,7 +278,7 @@
 
             html = `<li class="list-group-item border-0">
                                 <div class="row">
-                                    <small>`+ message +`</small>
+                                    <small>`+ message + `</small>
                                 </div>
                             </li>`
             return html

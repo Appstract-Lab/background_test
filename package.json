@@ -14,6 +14,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "cordova-android": "^10.1.2",
+    "cordova-plugin-background-fetch": "^7.1.1",
     "cordova-plugin-device": "^2.1.0",
     "cordova-plugin-firebasex": "^14.2.1"
   },
@@ -47,7 +48,8 @@
         "ANDROID_FIREBASE_PERF_GRADLE_PLUGIN_VERSION": "1.4.1",
         "ANDROID_GRPC_OKHTTP": "1.46.0"
       },
-      "cordova-plugin-device": {}
+      "cordova-plugin-device": {},
+      "cordova-plugin-background-fetch": {}
     }
   }
 }
