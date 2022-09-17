@@ -14,7 +14,9 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "cordova-android": "^10.1.2",
+    "cordova-androidx-build": "^1.0.4",
     "cordova-plugin-background-fetch": "^7.1.1",
+    "cordova-plugin-background-mode": "bitbucket:TheBosZ/cordova-plugin-run-in-background",
     "cordova-plugin-device": "^2.1.0",
     "cordova-plugin-firebasex": "^14.2.1"
   },
@@ -49,7 +51,8 @@
         "ANDROID_GRPC_OKHTTP": "1.46.0"
       },
       "cordova-plugin-device": {},
-      "cordova-plugin-background-fetch": {}
+      "cordova-plugin-background-fetch": {},
+      "cordova-plugin-background-mode": {}
     }
   }
 }
