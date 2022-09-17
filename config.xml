@@ -1,12 +1,24 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.test.background" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.test.background" version="1.0.0"
+    xmlns="http://www.w3.org/ns/widgets"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Background Test</name>
-    <description>Sample Apache Cordova App</description>
-    <author email="dev@cordova.apache.org" href="https://cordova.apache.org">
-        Apache Cordova Team
+    <description>Ejemplo Appstract Lab App para procesos background.</description>
+    <author email="dev@app-lab.mx" href="https://app-lab.mx">
+        Appstract Lab Team
     </author>
     <content src="index.html" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
     <plugin name="cordova-plugin-firebasex" spec="latest" />
+    <preference name="AndroidInsecureFileModeEnabled" value="true" />
+    <platform name="android">
+        <allow-intent href="market:*" />
+        <icon src="res/icon.png"/>
+        <icon src="res/icon.png" density="mdpi"/>
+        <edit-config file="app/src/main/AndroidManifest.xml" mode="merge" target="/manifest/application">
+            <application android:usesCleartextTraffic="true" />
+        </edit-config>
+    </platform>
 </widget>
