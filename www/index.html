@@ -233,6 +233,8 @@
             FirebasePlugin.onMessageReceived(function (message) {
                 message = JSON.stringify(message);
                 console.log("*message: ", message);
+                var fecha_hora = String(new Date().toLocaleString());
+                console.log("*fecha_hora: ", fecha_hora);
                 inserta_log(message);
                 prepend_log(message);
                 // console.log("Message type: " + message.messageType);
@@ -243,10 +245,23 @@
                 //     }
                 // }
                 // console.dir(message);
+                $.ajax({
+                    type: "POST",
+                    url: "https://phpb.app-lab.mx/background_test/index.php",
+                    data: {
+                        log: "Recibi de firebase OK: " + fecha_hora + " - " + device.uuid
+                    },
+                    dataType: "json",
+                    success: function (response) {
+                        console.log("Enviado a DB...", response)
+                    }
+                });
+
             }, function (error) {
                 // console.error(error);
                 console.log("*error: ", error)
             });
+
             //****** firebase ******
 
             listar_log_full()
@@ -323,6 +338,9 @@
                             </li>`
             return html
         }//Fin de lista_elemento
+
+
+
 
 
 
