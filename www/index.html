@@ -91,7 +91,7 @@
                                     <h6 class="my-1">Eventos</h6>
                                 </div>
                                 <div class="col-auto px-0">
-                                    <a class="btn btn-link btn-sm" onclick="listar_log_full()">Actualizar</a>
+                                    <!-- <a class="btn btn-link btn-sm" onclick="listar_log_full()">Actualizar</a> -->
                                 </div>
                             </div>
                         </div>
@@ -148,9 +148,9 @@
         document.addEventListener("deviceready", onDeviceReady, false)
 
         setInterval(function () {
-            inserta_log("Proceso infinito 1 min");
-            listar_log_full();
-        }, 5000); // 60 * 1000 milsec
+            inserta_log("Proceso infinito 15 min");
+            // listar_log_full();
+        }, 900000); // 60 * 1000 milsec
 
         async function onDeviceReady() {
 
@@ -213,7 +213,6 @@
                 message = JSON.stringify(message);
                 console.log("*message: ", message);
                 inserta_log(message);
-                listar_log_full();
                 // console.log("Message type: " + message.messageType);
                 // if (message.messageType === "notification") {
                 //     console.log("Notification message received");
@@ -228,12 +227,9 @@
             });
             //****** firebase ******
 
-            listar_log_full()
-
         }//Fin de onDeviceReady async
 
         function listar_log_full() {
-            $("#eventos_zone").html("");
             listar_log(function (log) {
                 console.log("*Log: ", log)
                 for (let i = 0; i < log.length; i++) {
