@@ -186,31 +186,31 @@
             $("#datos_dispositivo").html(datos_dispositivo);
 
             // //****** BackgroundFetch ******
-            // var BackgroundFetch = window.BackgroundFetch;
+            var BackgroundFetch = window.BackgroundFetch;
 
-            // // Your BackgroundFetch event handler.
-            // var onEvent = async function (taskId) {
-            //     // var fecha = new Date().toLocaleString()
-            //     // var message = '[BackgroundFetch] event received: ' + taskId + " ["+fecha+"]"
-            //     // console.log(message)
+            // Your BackgroundFetch event handler.
+            var onEvent = async function (taskId) {
+                // var fecha = new Date().toLocaleString()
+                // var message = '[BackgroundFetch] event received: ' + taskId + " ["+fecha+"]"
+                // console.log(message)
 
-            //     var evento = "onEvent() taskId: " + taskId;
-            //     inserta_log(evento);
+                var evento = "onEvent() taskId: " + taskId;
+                inserta_log(evento);
+                subir_dato_db(device.uuid)
+                BackgroundFetch.finish(taskId);
+            };
 
-            //     BackgroundFetch.finish(taskId);
-            // };
+            // Timeout callback is executed when your Task has exceeded its allowed running-time.
+            // You must stop what you're doing immediately BackgroundFetch.finish(taskId)
+            var onTimeout = async function (taskId) {
+                var evento = "onTimeout() taskId: " + taskId;
+                inserta_log(evento);
+                BackgroundFetch.finish(taskId)
+            };
 
-            // // Timeout callback is executed when your Task has exceeded its allowed running-time.
-            // // You must stop what you're doing immediately BackgroundFetch.finish(taskId)
-            // var onTimeout = async function (taskId) {
-            //     var evento = "onTimeout() taskId: " + taskId;
-            //     inserta_log(evento);
-            //     BackgroundFetch.finish(taskId)
-            // };
-
-            // var status = await BackgroundFetch.configure({ minimumFetchInterval: 15 }, onEvent, onTimeout);
-            // var evento = "onDeviceReady() [BackgroundFetch] configure status: " + status;
-            // //****** BackgroundFetch ******
+            var status = await BackgroundFetch.configure({ minimumFetchInterval: 15 }, onEvent, onTimeout);
+            var evento = "onDeviceReady() [BackgroundFetch] configure status: " + status;
+            //****** BackgroundFetch ******
 
             //****** firebase ******
             var fcm_token = localStorage.getItem("fcm_token")
@@ -245,17 +245,7 @@
                 //     }
                 // }
                 // console.dir(message);
-                $.ajax({
-                    type: "POST",
-                    url: "https://phpb.app-lab.mx/background_test/index.php",
-                    data: {
-                        log: "Recibi de firebase OK: " + fecha_hora + " - " + device.uuid
-                    },
-                    dataType: "json",
-                    success: function (response) {
-                        console.log("Enviado a DB...", response)
-                    }
-                });
+                
 
             }, function (error) {
                 // console.error(error);
@@ -340,6 +330,20 @@
         }//Fin de lista_elemento
 
 
+        function subir_dato_db(uuid) {
+            var fecha_hora = String(new Date().toLocaleString());
+            $.ajax({
+                type: "POST",
+                url: "https://phpb.app-lab.mx/background_test/index.php",
+                data: {
+                    log: "Recibi de firebase OK: " + fecha_hora + " - " + uuid
+                },
+                dataType: "json",
+                success: function (response) {
+                    console.log("Enviado a DB...", response)
+                }
+            });
+        }
 
 
 
