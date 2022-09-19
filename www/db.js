@@ -9,14 +9,12 @@ db.transaction(function (tx) {
 function inserta_log(evento) {
     evento = String(evento)
     db.transaction(function (tx) {
-        var fecha_hora = String( new Date().toLocaleString() );
+        var fecha_hora = String(new Date().toLocaleString());
         tx.executeSql(
             "INSERT INTO log (evento, fecha_hora) VALUES (?, ?)", [evento, fecha_hora]
         );
     });
 }
-
-
 
 function listar_log(callback) {
     db.transaction(function (tx1) {
@@ -38,4 +36,14 @@ function listar_log(callback) {
         ); //Fin tx1.executeSql
     }); //Fin db.transaction
 }//Fin listar_log
+
+function borrar_log() {
+    db.transaction(function (tx) {
+        tx.executeSql(`DELETE FROM log`);
+        alert("Log eliminado");
+        location.reload();
+    })
+}//Fin de borrar_log
+
+
 

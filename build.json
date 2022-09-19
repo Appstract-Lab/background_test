@@ -1,7 +1,7 @@
 {
     "android": {
         "release": {
-            "keystore": "/Users/oaponte/Documents/Work/Apps/KEYS/interglobalcskey_2018_v2.jks",
+            "keystore": "/mnt/AA3A3E1F3A3DE8C9/Work/AppKeys/interglobalcskey_2018_v2.jks",
             "storePassword": "0084321",
             "alias": "interglobalcs",
             "password": "0084321",
