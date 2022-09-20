@@ -150,31 +150,9 @@
         var minute_ms = 60000;
         var minutes = 1;
 
+        function onDeviceReady() {
 
-
-
-        async function onDeviceReady() {
-
-            console.log("Entre a onDeviceReady()");
             var fecha_hora = String(new Date().toLocaleString());
-
-            // cordova.plugins.backgroundMode.enable();
-            // cordova.plugins.backgroundMode.setDefaults({ silent: true });
-
-            // cordova.plugins.backgroundMode.on('activate', function () {
-            //     var message = "Entre en modo background";
-            //     console.log(message);
-            //     // inserta_log(message);
-
-            //     setInterval(function () {
-            //         var message = "Loop infinito " + minutes + " min";
-            //         inserta_log(message);
-            //         prepend_log(message);
-            //         // listar_log_full();
-            //     }, minute_ms * minutes);
-
-            //     cordova.plugins.backgroundMode.disableWebViewOptimizations();
-            // });
 
             var datos_dispositivo = "<b>Modelo: </b> " + device.model + "<br/>";
             datos_dispositivo += "<b>UUID: </b> " + device.uuid + "<br/>";
@@ -189,13 +167,11 @@
             var BackgroundFetch = window.BackgroundFetch;
 
             // Your BackgroundFetch event handler.
-            var onEvent = async function (taskId) {
+            var onEvent = function (taskId) {
                 var fecha = new Date().toLocaleString()
-                var message = '[BackgroundFetch] event received: ' + taskId + " ["+fecha+"]"
-                console.log(message)
-
-                var evento = "onEvent() taskId: " + taskId;
-                inserta_log(evento);
+                var message = '[BackgroundFetch] event received: ' + taskId + " [" + fecha + "]"
+                console.log(message);
+                inserta_log(message);
                 prepend_log(message);
                 subir_dato_db(device.uuid);
                 BackgroundFetch.finish(taskId);
@@ -203,18 +179,22 @@
 
             // Timeout callback is executed when your Task has exceeded its allowed running-time.
             // You must stop what you're doing immediately BackgroundFetch.finish(taskId)
-            var onTimeout = async function (taskId) {
-                var evento = "onTimeout() taskId: " + taskId;
-                inserta_log(evento);
+            var onTimeout = function (taskId) {
+                var message = "onTimeout() taskId: " + taskId;
+                console.log(message);
+                inserta_log(message);
+                prepend_log(message);
+                subir_dato_db(device.uuid);
                 BackgroundFetch.finish(taskId)
             };
 
-            var status = await BackgroundFetch.configure({
+            var status = BackgroundFetch.configure({
                 minimumFetchInterval: 15,
-                requiresDeviceIdle: true,
-                forceAlarmManager: true
+                // requiresDeviceIdle: true,
+                // forceAlarmManager: true,
+                // stopOnTerminate: false,
+                // enableHeadless: true
             }, onEvent, onTimeout);
-            var evento = "onDeviceReady() [BackgroundFetch] configure status: " + status;
 
             function subir_dato_db(uuid) {
                 var fecha_hora = String(new Date().toLocaleString());
@@ -233,51 +213,137 @@
 
             //****** BackgroundFetch ******
 
-            //****** firebase ******
-            var fcm_token = localStorage.getItem("fcm_token")
-
-            if (fcm_token === null) {
-                get_firebase_token(function (status, token) {
-                    if (status) {
-                        console.log("** Obtuve OK token: ", token)
-                        localStorage.setItem("fcm_token", token)
-                        $("#token_zone").html("<b>GENERO: </b>" + token)
-                        suscribe_channel("2do_plano")
-                    }//Fin de if
-                })//Fin de get_firebase_token
-            } else {
-                console.log("Ya existia token. ", fcm_token);
-                suscribe_channel("2do_plano")
-                $("#token_zone").html(fcm_token)
-            }
-
-            FirebasePlugin.onMessageReceived(function (message) {
-                message = JSON.stringify(message);
-                console.log("*message: ", message);
-                var fecha_hora = String(new Date().toLocaleString());
-                console.log("*fecha_hora: ", fecha_hora);
-                inserta_log(message);
-                prepend_log(message);
-                // console.log("Message type: " + message.messageType);
-                // if (message.messageType === "notification") {
-                //     console.log("Notification message received");
-                //     if (message.tap) {
-                //         console.log("Tapped in " + message.tap);
-                //     }
-                // }
-                // console.dir(message);
 
 
-            }, function (error) {
-                // console.error(error);
-                console.log("*error: ", error)
-            });
+        }//Fin de deviceready_sync
 
-            //****** firebase ******
 
-            listar_log_full()
+        // async function onDeviceReady() {
 
-        }//Fin de onDeviceReady async
+        //     console.log("Entre a onDeviceReady()");
+        //     var fecha_hora = String(new Date().toLocaleString());
+
+        //     // cordova.plugins.backgroundMode.enable();
+        //     // cordova.plugins.backgroundMode.setDefaults({ silent: true });
+
+        //     // cordova.plugins.backgroundMode.on('activate', function () {
+        //     //     var message = "Entre en modo background";
+        //     //     console.log(message);
+        //     //     // inserta_log(message);
+
+        //     //     setInterval(function () {
+        //     //         var message = "Loop infinito " + minutes + " min";
+        //     //         inserta_log(message);
+        //     //         prepend_log(message);
+        //     //         // listar_log_full();
+        //     //     }, minute_ms * minutes);
+
+        //     //     cordova.plugins.backgroundMode.disableWebViewOptimizations();
+        //     // });
+
+        //     var datos_dispositivo = "<b>Modelo: </b> " + device.model + "<br/>";
+        //     datos_dispositivo += "<b>UUID: </b> " + device.uuid + "<br/>";
+        //     datos_dispositivo += "<b>Fabricante: </b> " + device.manufacturer + "<br/>";
+        //     datos_dispositivo += "<b>Versión: </b> " + device.version + "<br/>";
+        //     datos_dispositivo += "<b>onDeviceReady(): </b> " + fecha_hora + "<br/>";
+        //     // datos_dispositivo += "<b>Loop infinito: </b> " + minutes + " mins<br/>";
+
+        //     $("#datos_dispositivo").html(datos_dispositivo);
+
+        //     // //****** BackgroundFetch ******
+        //     var BackgroundFetch = window.BackgroundFetch;
+
+        //     // Your BackgroundFetch event handler.
+        //     var onEvent = async function (taskId) {
+        //         var fecha = new Date().toLocaleString()
+        //         var message = '[BackgroundFetch] event received: ' + taskId + " [" + fecha + "]"
+        //         console.log(message)
+
+        //         var evento = "onEvent() taskId: " + taskId;
+        //         inserta_log(evento);
+        //         prepend_log(message);
+        //         subir_dato_db(device.uuid);
+        //         BackgroundFetch.finish(taskId);
+        //     };
+
+        //     // Timeout callback is executed when your Task has exceeded its allowed running-time.
+        //     // You must stop what you're doing immediately BackgroundFetch.finish(taskId)
+        //     var onTimeout = async function (taskId) {
+        //         var evento = "onTimeout() taskId: " + taskId;
+        //         inserta_log(evento);
+        //         BackgroundFetch.finish(taskId)
+        //     };
+
+        //     var status = await BackgroundFetch.configure({
+        //         minimumFetchInterval: 15,
+        //         requiresDeviceIdle: true,
+        //         forceAlarmManager: true,
+        //         enableHeadless: true
+        //     }, onEvent, onTimeout);
+        //     var evento = "onDeviceReady() [BackgroundFetch] configure status: " + status;
+
+        //     function subir_dato_db(uuid) {
+        //         var fecha_hora = String(new Date().toLocaleString());
+        //         $.ajax({
+        //             type: "POST",
+        //             url: "https://phpb.app-lab.mx/background_test/index.php",
+        //             data: {
+        //                 log: "Envie dato: " + fecha_hora + " - " + uuid
+        //             },
+        //             dataType: "json",
+        //             success: function (response) {
+        //                 console.log("Enviado a DB...", response)
+        //             }
+        //         });
+        //     }
+
+        //     //****** BackgroundFetch ******
+
+        //     //****** firebase ******
+        //     var fcm_token = localStorage.getItem("fcm_token")
+
+        //     if (fcm_token === null) {
+        //         get_firebase_token(function (status, token) {
+        //             if (status) {
+        //                 console.log("** Obtuve OK token: ", token)
+        //                 localStorage.setItem("fcm_token", token)
+        //                 $("#token_zone").html("<b>GENERO: </b>" + token)
+        //                 suscribe_channel("2do_plano")
+        //             }//Fin de if
+        //         })//Fin de get_firebase_token
+        //     } else {
+        //         console.log("Ya existia token. ", fcm_token);
+        //         suscribe_channel("2do_plano")
+        //         $("#token_zone").html(fcm_token)
+        //     }
+
+        //     FirebasePlugin.onMessageReceived(function (message) {
+        //         message = JSON.stringify(message);
+        //         console.log("*message: ", message);
+        //         var fecha_hora = String(new Date().toLocaleString());
+        //         console.log("*fecha_hora: ", fecha_hora);
+        //         inserta_log(message);
+        //         prepend_log(message);
+        //         // console.log("Message type: " + message.messageType);
+        //         // if (message.messageType === "notification") {
+        //         //     console.log("Notification message received");
+        //         //     if (message.tap) {
+        //         //         console.log("Tapped in " + message.tap);
+        //         //     }
+        //         // }
+        //         // console.dir(message);
+
+
+        //     }, function (error) {
+        //         // console.error(error);
+        //         console.log("*error: ", error)
+        //     });
+
+        //     //****** firebase ******
+
+        //     listar_log_full()
+
+        // }//Fin de onDeviceReady async
 
         function listar_log_full() {
             listar_log(function (log) {

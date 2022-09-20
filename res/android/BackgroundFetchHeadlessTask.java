@@ -16,7 +16,12 @@ public class BackgroundFetchHeadlessTask implements HeadlessTask {
         }
         Log.d(BackgroundFetch.TAG, "My BackgroundFetchHeadlessTask:  onFetch: " + taskId);
         // Perform your work here....
-
+        // cordova.getActivity().runOnUiThread(new Runnable() {
+        //     @Override
+        //     public void run() {
+        //         webView.loadUrl("javascript: alert('hello')");
+        //     }
+        // });
         // Just as in Javascript callback, you must signal #finish
         BackgroundFetch.getInstance(context).finish(taskId);
     }
