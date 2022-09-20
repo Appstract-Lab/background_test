@@ -149,10 +149,13 @@
 
         var minute_ms = 60000;
         var minutes = 1;
+        var uuid = 0;
 
         function onDeviceReady() {
 
             var fecha_hora = String(new Date().toLocaleString());
+
+            uuid = device.uuid;
 
             var datos_dispositivo = "<b>Modelo: </b> " + device.model + "<br/>";
             datos_dispositivo += "<b>UUID: </b> " + device.uuid + "<br/>";
@@ -168,12 +171,13 @@
 
             // Your BackgroundFetch event handler.
             var onEvent = function (taskId) {
-                var fecha = new Date().toLocaleString()
-                var message = '[BackgroundFetch] event received: ' + taskId + " [" + fecha + "]"
-                console.log(message);
-                inserta_log(message);
-                prepend_log(message);
-                subir_dato_db(device.uuid);
+                // var fecha = new Date().toLocaleString()
+                // var message = '[BackgroundFetch] event received: ' + taskId + " [" + fecha + "]"
+                // console.log(message);
+                // inserta_log(message);
+                // prepend_log(message);
+                // subir_dato_db(device.uuid);
+                console.log("Entre a onEvent()");
                 BackgroundFetch.finish(taskId);
             };
 
@@ -189,27 +193,14 @@
             };
 
             var status = BackgroundFetch.configure({
-                minimumFetchInterval: 15,
+                minimumFetchInterval: 15
                 // requiresDeviceIdle: true,
                 // forceAlarmManager: true,
                 // stopOnTerminate: false,
                 // enableHeadless: true
             }, onEvent, onTimeout);
 
-            function subir_dato_db(uuid) {
-                var fecha_hora = String(new Date().toLocaleString());
-                $.ajax({
-                    type: "POST",
-                    url: "https://phpb.app-lab.mx/background_test/index.php",
-                    data: {
-                        log: "Envie dato: " + fecha_hora + " - " + uuid
-                    },
-                    dataType: "json",
-                    success: function (response) {
-                        console.log("Enviado a DB...", response)
-                    }
-                });
-            }
+
 
             //****** BackgroundFetch ******
 
@@ -217,6 +208,26 @@
 
         }//Fin de deviceready_sync
 
+
+        function subir_dato_db() {
+
+            var fecha_hora = String(new Date().toLocaleString());
+            
+            $.ajax({
+                type: "POST",
+                url: "https://phpb.app-lab.mx/background_test/index.php",
+                data: {
+                    log: "Envie dato: " + fecha_hora + " - " + uuid
+                },
+                dataType: "json",
+                success: function (response) {
+                    var message = 'Guardado en DB OK: ' + response.id + " [" + fecha_hora + "]"
+                    console.log(message);
+                    inserta_log(message);
+                    prepend_log(message);
+                }
+            });
+        }
 
         // async function onDeviceReady() {
 
