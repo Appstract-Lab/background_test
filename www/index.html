@@ -167,42 +167,86 @@
             $("#datos_dispositivo").html(datos_dispositivo);
 
             // //****** BackgroundFetch ******
-            var BackgroundFetch = window.BackgroundFetch;
+            // var BackgroundFetch = window.BackgroundFetch;
 
-            // Your BackgroundFetch event handler.
-            var onEvent = function (taskId) {
-                // var fecha = new Date().toLocaleString()
-                // var message = '[BackgroundFetch] event received: ' + taskId + " [" + fecha + "]"
-                // console.log(message);
-                // inserta_log(message);
-                // prepend_log(message);
-                // subir_dato_db(device.uuid);
-                console.log("Entre a onEvent()");
-                BackgroundFetch.finish(taskId);
-            };
+            // // Your BackgroundFetch event handler.
+            // var onEvent = function (taskId) {
+            //     // var fecha = new Date().toLocaleString()
+            //     // var message = '[BackgroundFetch] event received: ' + taskId + " [" + fecha + "]"
+            //     // console.log(message);
+            //     // inserta_log(message);
+            //     // prepend_log(message);
+            //     // subir_dato_db(device.uuid);
+            //     console.log("Entre a onEvent()");
+            //     BackgroundFetch.finish(taskId);
+            // };
 
-            // Timeout callback is executed when your Task has exceeded its allowed running-time.
-            // You must stop what you're doing immediately BackgroundFetch.finish(taskId)
-            var onTimeout = function (taskId) {
-                var message = "onTimeout() taskId: " + taskId;
-                console.log(message);
-                inserta_log(message);
-                prepend_log(message);
-                subir_dato_db(device.uuid);
-                BackgroundFetch.finish(taskId)
-            };
+            // // Timeout callback is executed when your Task has exceeded its allowed running-time.
+            // // You must stop what you're doing immediately BackgroundFetch.finish(taskId)
+            // var onTimeout = function (taskId) {
+            //     var message = "onTimeout() taskId: " + taskId;
+            //     console.log(message);
+            //     inserta_log(message);
+            //     prepend_log(message);
+            //     subir_dato_db(device.uuid);
+            //     BackgroundFetch.finish(taskId)
+            // };
 
-            var status = BackgroundFetch.configure({
-                minimumFetchInterval: 15
-                // requiresDeviceIdle: true,
-                // forceAlarmManager: true,
-                // stopOnTerminate: false,
-                // enableHeadless: true
-            }, onEvent, onTimeout);
+            // var status = BackgroundFetch.configure({
+            //     minimumFetchInterval: 15
+            //     // requiresDeviceIdle: true,
+            //     // forceAlarmManager: true,
+            //     // stopOnTerminate: false,
+            //     // enableHeadless: true
+            // }, onEvent, onTimeout);
 
 
 
             //****** BackgroundFetch ******
+
+
+            //****** firebase ******
+            var fcm_token = localStorage.getItem("fcm_token")
+
+            if (fcm_token === null) {
+                get_firebase_token(function (status, token) {
+                    if (status) {
+                        console.log("** Obtuve OK token: ", token)
+                        localStorage.setItem("fcm_token", token)
+                        $("#token_zone").html("<b>GENERO: </b>" + token)
+                        suscribe_channel("2do_plano")
+                    }//Fin de if
+                })//Fin de get_firebase_token
+            } else {
+                console.log("Ya existia token. ", fcm_token);
+                suscribe_channel("2do_plano")
+                $("#token_zone").html(fcm_token)
+            }
+
+            FirebasePlugin.onMessageReceived(function (message) {
+                message = JSON.stringify(message);
+                console.log("*message: ", message);
+                // var fecha_hora = String(new Date().toLocaleString());
+                // console.log("*fecha_hora: ", fecha_hora);
+                // inserta_log(message);
+                // prepend_log(message);
+                // subir_dato_db_firebase();
+                // console.log("Message type: " + message.messageType);
+                // if (message.messageType === "notification") {
+                //     console.log("Notification message received");
+                //     if (message.tap) {
+                //         console.log("Tapped in " + message.tap);
+                //     }
+                // }
+                // console.dir(message);
+
+
+            }, function (error) {
+                // console.error(error);
+                console.log("*error: ", error)
+            });
+
+            //****** firebase ******
 
 
 
@@ -212,12 +256,32 @@
         function subir_dato_db() {
 
             var fecha_hora = String(new Date().toLocaleString());
-            
+
             $.ajax({
                 type: "POST",
                 url: "https://phpb.app-lab.mx/background_test/index.php",
                 data: {
                     log: "Envie dato: " + fecha_hora + " - " + uuid
+                },
+                dataType: "json",
+                success: function (response) {
+                    var message = 'Guardado en DB OK: ' + response.id + " [" + fecha_hora + "]"
+                    console.log(message);
+                    inserta_log(message);
+                    prepend_log(message);
+                }
+            });
+        }
+
+        function subir_dato_db_firebase() {
+
+            var fecha_hora = String(new Date().toLocaleString());
+
+            $.ajax({
+                type: "POST",
+                url: "https://phpb.app-lab.mx/background_test/index.php",
+                data: {
+                    log: "De Firebase: " + fecha_hora + " - " + uuid
                 },
                 dataType: "json",
                 success: function (response) {
